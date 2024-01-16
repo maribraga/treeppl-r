@@ -7,27 +7,33 @@
 #' @export
 #'
 #' @examples
-read_treeppl_output <- function(filename = NULL){
+read_treeppl_output <- function(filename = NULL, sample_freq = NULL){
 
   # check if file has multiple lines
   nlines <- system2("wc", c("-l", filename), stdout = TRUE) %>%
     strex::str_first_number()
 
   if( nlines > 1 ){
-    # ammend json format
+    # amend json format
     system2(system.file("json_amend.zsh", package = "treepplr"), filename)
 
     # read file and then create a list of outputs
     out <- separate_outs(filename)  %>%
       lapply(tidy_samples)
 
+    if(!is.null(sample_freq)){
+      out <- lapply(out, FUN = function(x) sub_sample_sweep(x, sample_freq))
+    }
+
   } else{
     # read json file and make it a data frame
     out <- tidy_samples(filename)
+
+    if(!is.null(sample_freq)){
+      out <- sub_sample_sweep(out, sample_freq)
+    }
   }
-
   return(out)
-
 }
 
 
@@ -74,6 +80,7 @@ tidy_samples <- function(json_file = NULL) {
     dplyr::bind_cols(tibble::tibble(log_weights = wei,
                      weights = exp(log_weights - max(log_weights)),
                      norm_weights = weights/sum(weights))) %>%
+    dplyr::mutate(normConst = out_list$normConst[[1]]) %>%
     as.data.frame()
 
   return(out)
@@ -81,4 +88,13 @@ tidy_samples <- function(json_file = NULL) {
 }
 
 
+sub_sample_sweep <- function(out = NULL, sample_freq = NULL){
 
+  nsamples <- floor(nrow(out)/sample_freq)
+
+  subset <- out %>%
+    dplyr::slice_head(norm_weights, n = nsamples) %>%
+    as.data.frame()
+
+  return(subset)
+}
