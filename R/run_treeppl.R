@@ -20,7 +20,7 @@
 #'                         data_path = input,
 #'                         samples = 10)
 #' }
-run_treeppl <- function(source, data_path, method = "smc-bpf", samples = 1000, chains = 1, out_path = NULL, name_exe = "out", sample_freq = NULL) { # smc-apf
+run_treeppl <- function(source, data_path, method = "smc-bpf", samples = 1000, chains = 1, out_path = NULL, name_exe = "out", sample_freq = 1000) { # smc-apf
 
   dir <- sub("[^/]+.tppl","", source)
 
@@ -36,10 +36,9 @@ run_treeppl <- function(source, data_path, method = "smc-bpf", samples = 1000, c
   # should the executable go to a temporary folder and be delete afterwards?
 
   # run
-  system2(command = paste0(dir,"/",name_exe),
-          args = c(data_path,
-                   paste0(samples," ",chains)),
-          stdout = out_path
+  system2(command = paste0(dir,name_exe),
+          args = paste0(data_path," ",samples," ",chains," > ",out_path),
+          stdout = TRUE
   )
 
   # read output

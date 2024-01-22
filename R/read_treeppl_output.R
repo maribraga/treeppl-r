@@ -19,7 +19,7 @@ read_treeppl_output <- function(file_path, sample_freq = 1000) {
   tidy_out <- tidy_output(fromjson) %>%
     lapply(FUN = function(x) dplyr::filter(x, .data$log_weights != "-Inf"))   # remove the last particle from smc-apf outputs
 
-  out <- sub_sample_sweep(out, sample_freq)
+  out <- sub_sample_sweep(tidy_out, sample_freq)
 
   return(out)
 
@@ -120,7 +120,7 @@ tidy_samples_df <- function(out_list){
 
     tidy_df <- samples_data %>%
       tidyr::unnest_wider(dplyr::all_of(split_this), names_sep = "_") %>%
-      dplyr::mutate(sample = 1:nrow(.data), .before = 1) %>%
+      dplyr::mutate(sample = 1:nrow(.), .before = 1) %>%
       dplyr::bind_cols(tibble::tibble(log_weights = dplyr::pull(wei),
                                       weights = exp(.data$log_weights - max(.data$log_weights)),
                                       norm_weight_within_sweep = .data$weights/sum(.data$weights))) %>%
@@ -141,7 +141,7 @@ tidy_samples_vec <- function(out_list){
   for(i in seq_along(out_list)) {
     tidy_df <- as.data.frame(out_list[[i]]) %>%
       dplyr::rename(log_weights = .data$weights, parameter = .data$samples) %>%
-      dplyr::mutate(sample = 1:nrow(.data), .before = 1) %>%
+      dplyr::mutate(sample = 1:nrow(.), .before = 1) %>%
       dplyr::mutate(weights = exp(.data$log_weights - max(.data$log_weights)),
                     norm_weight_within_sweep = .data$weights/sum(.data$weights),
                     .before = "normConst")
@@ -153,17 +153,28 @@ tidy_samples_vec <- function(out_list){
 }
 
 
-sub_sample_sweep <- function(out = NULL, sample_freq = NULL){
+sub_sample_sweep <- function(tidy_out, sample_freq){
 
-  nsamples <- floor(nrow(out)/sample_freq)
+  nsamples <- floor(nrow(tidy_out[[1]])/sample_freq)
   if(nsamples == 0) nsamples <- 1
 
-  subset <- out %>%
-    dplyr::slice_max(.data$norm_weights, n = nsamples) %>%
-    as.data.frame()
+  sub_list <- list()
+  for(i in seq_along(tidy_out)){
 
-  return(subset)
+     subset <- tidy_out[[i]] %>%
+      dplyr::slice_max(.data$norm_weight_within_sweep, n = nsamples) %>%
+      dplyr::mutate(run = i, .before = 1)
+
+    sub_list[[i]] <- subset
+  }
+
+  sub_df <- dplyr::bind_rows(sub_list) %>%
+    dplyr::mutate(posterior = exp(.data$normConst - max(.data$normConst))) %>%
+      as.data.frame()
+
+  return(sub_df)
 }
 
 
+utils::globalVariables(".")
 

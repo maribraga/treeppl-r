@@ -8,7 +8,7 @@ Description: This package in an interface for using TreePPL programs.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 URL: https://github.com/treeppl/treepplr,
     http://treeppl.org/treepplr/
 BugReports: https://github.com/treeppl/treepplr/issues

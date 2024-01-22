@@ -12,7 +12,7 @@ run_treeppl(
   chains = 1,
   out_path = NULL,
   name_exe = "out",
-  sample_freq = NULL
+  sample_freq = 1000
 )
 }
 \arguments{

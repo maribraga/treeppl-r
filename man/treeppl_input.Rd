@@ -18,7 +18,8 @@ Path to a JSON file
 This function takes R objects and writes out an JSON file to be used by \code{run_treeppl()}.
 }
 \examples{
+\dontrun{
 coinflips <- tibble::tibble(coinflips = sample(c(TRUE, FALSE), 20, replace = TRUE))
 input <- treeppl_input(object_list = coinflips, file_path = "coin_input.json")
-
+}
 }
