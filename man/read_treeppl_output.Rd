@@ -2,17 +2,25 @@
 % Please edit documentation in R/read_treeppl_output.R
 \name{read_treeppl_output}
 \alias{read_treeppl_output}
-\title{Read output from inference with TreePPL}
+\title{Read JSON output from inference with TreePPL}
 \usage{
-read_treeppl_output(filename = NULL)
+read_treeppl_output(file_path, sample_freq = 1000)
 }
 \arguments{
-\item{filename}{Path to json file with the output from inference with TreePPL}
+\item{file_path}{Path to json file with the output from TreePPL inference.}
+
+\item{sample_freq}{For each sweep, sample one particle every \code{sample_freq} particles.}
 }
 \value{
-A data frame with one row for each sample and columns for parameters and weights for each run.
-If the file contains the output from multiple runs, returns a list of data frames.
+A data frame with one row for each sample and columns for parameters and joint posterior probability.
 }
 \description{
-Read output from inference with TreePPL
+Read JSON output from inference with TreePPL
+}
+\examples{
+\dontrun{
+  # the common case is that read_treeppl_output is used within run_treeppl()
+  # if you run treeppl outside of R, you can use this function to read in the output.
+  logs <- read_treeppl_output("output/stdout.json", sample_freq = 1000)
+}
 }

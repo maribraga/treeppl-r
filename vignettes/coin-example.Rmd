@@ -25,12 +25,13 @@ library(ggplot2)
 Run the `coin.tppl` TreePPL program using the created input data. 
 
 ```{r, eval=FALSE}
+
 coinflips <- tibble(coinflips = sample(c(TRUE, FALSE), 20, replace = TRUE))
 
-input <- treeppl_input(coinflips)
+input <- treeppl_input(object_list = coinflips, file_path = "coin_input.json")
 
-output <- run_treeppl(dir = system.file("extdata", package = "treepplr"), 
-                      source = "coin.tppl", data = input, samples = 100)
+output <- run_treeppl(source = paste0(system.file("extdata", package = "treepplr"),"/coin.tppl"), 
+                      data_path = input, samples = 10)
 
 ```
 
@@ -38,7 +39,7 @@ output <- run_treeppl(dir = system.file("extdata", package = "treepplr"),
 output <- readRDS("coin_rdata/output.rds")
 ```
 
-Plot the posterior distribution (normalized weights).
+Plot the posterior distribution.
 
 ```{r}
 if(rlang::is_installed("ggplot2")) {

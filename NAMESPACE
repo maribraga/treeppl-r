@@ -2,6 +2,8 @@
 
 export(read_treeppl_output)
 export(run_treeppl)
+export(treeppl_input)
 export(treepplr_example)
 importFrom(magrittr,"%>%")
+importFrom(methods,is)
 importFrom(rlang,.data)

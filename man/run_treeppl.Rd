@@ -5,23 +5,32 @@
 \title{Compile and run a TreePPL program}
 \usage{
 run_treeppl(
-  dir = NULL,
-  source = NULL,
+  source,
+  data_path,
   method = "smc-bpf",
-  data = NULL,
-  samples = 1000
+  samples = 1000,
+  chains = 1,
+  out_path = NULL,
+  name_exe = "out",
+  sample_freq = NULL
 )
 }
 \arguments{
-\item{dir}{The directory that contains the TreePPL code and input file. The executable and the output files will be written here.}
+\item{source}{File path to TreePPL source program.}
 
-\item{source}{Name of file with TreePPL program.}
+\item{data_path}{Complete path to JSON file with input data. Created by \code{treeppl_input()}.}
 
 \item{method}{Inference method to be used.}
 
-\item{data}{Name of object with input data.}
+\item{samples}{The number of samples/particles during inference. Default is 1000 samples.}
 
-\item{samples}{The number of samples during inference.}
+\item{chains}{The number of chains/sweeps. Each chain will contain the number of samples passed in \code{samples}. Default is 1 chain.}
+
+\item{out_path}{Path to JSON file outputed by TreePPL.}
+
+\item{name_exe}{Name of the executable compiled from \code{source}.}
+
+\item{sample_freq}{For each sweep/chain, sample one particle/sample every \code{sample_freq} particles/samples.}
 }
 \value{
 A data frame with sampled values, log weights, normalized weights, and the normalizing constant for all samples.
@@ -32,12 +41,9 @@ Compile and run a TreePPL program
 \examples{
 \dontrun{
   coinflips <- tibble(coinflips = sample(c(TRUE, FALSE), 20, replace = TRUE))
-  output <- run_treeppl(dir = system.file("extdata", package = "treepplr"),
-                        source = "coin.tppl", data = coinflips, samples = 10)
-  if(rlang::is_installed("ggplot2")) {
-    ggplot2::ggplot(output) +
-    ggplot2::geom_col(ggplot2::aes(.data$samples, .data$nweights), width = 0.005) +
-    ggplot2::theme_bw()
-  }
+.  input <- treeppl_input(coinflips)
+  output <- run_treeppl(source = paste0(system.file("extdata", package = "treepplr"),"/coin.tppl"),
+                        data_path = input,
+                        samples = 10)
 }
 }
