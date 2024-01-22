@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   coin-example: coin-example.html
-last_built: 2024-01-22T08:25Z
+last_built: 2024-01-22T12:02Z
 urls:
   reference: http://treeppl.org/treepplr/reference
   article: http://treeppl.org/treepplr/articles
